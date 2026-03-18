@@ -8,7 +8,7 @@ This document converts the narrative threat model into diagrams (data-flow and a
 flowchart LR
     subgraph ClientSide[Client / Caller Side]
       A1[MCP Client / AI Assistant\n(JSON-RPC / HTTP Caller)]
-      A2[Attacker-Controlled Inputs\n- tool params\n- headers\n- callback params\n- document/email prompt content]
+      A2[Attacker-Controlled Inputs\n• tool params\n• headers\n• callback params\n• document/email prompt content]
     end
 
     subgraph ServerHost[Google Workspace MCP Server Host]
@@ -53,16 +53,16 @@ flowchart LR
 ```mermaid
 flowchart TB
     U[Untrusted / Semi-trusted Inputs\n(Client params, headers, callback query, URL content)]
-    T1{{Boundary 1:\nMCP Client <-> Server}}
+    T1{{Boundary 1:\nMCP Client ↔ Server}}
     S[Workspace MCP Server Process]
 
-    T2{{Boundary 2:\nServer <-> Google APIs}}
+    T2{{Boundary 2:\nServer ↔ Google APIs}}
     G[Google OAuth + Google Workspace APIs]
 
-    T3{{Boundary 3:\nServer <-> Local Filesystem}}
+    T3{{Boundary 3:\nServer ↔ Local Filesystem}}
     F[Credential files, attachments, uploads]
 
-    T4{{Boundary 4:\nServer <-> External URLs}}
+    T4{{Boundary 4:\nServer ↔ External URLs}}
     X[Internet hosts / file URLs]
 
     O[Operator-controlled Config\n(env vars, tool tiers, backend settings)]
@@ -119,32 +119,23 @@ flowchart LR
 ## 5) Criticality heatmap
 
 ```mermaid
-flowchart TB
-    subgraph Critical[Critical]
-      C1[Cross-user auth/session bypass]
-      C2[OAuth state validation bypass]
-      C3[SSRF bypass to metadata services]
-      C4[File path traversal outside allowlist]
-    end
-
-    subgraph High[High]
-      H1[Credential theft after host compromise]
-      H2[Read-only/write-scope bypass]
-      H3[Attachment URL leakage before TTL]
-    end
-
-    subgraph Medium[Medium]
-      M1[Prompt-injection-driven same-user actions]
-      M2[API/resource exhaustion DoS]
-    end
-
-    classDef critical fill:#ffdddd,stroke:#cc0000,stroke-width:2px;
-    classDef high fill:#ffe8cc,stroke:#d97706,stroke-width:2px;
-    classDef medium fill:#fff8cc,stroke:#a16207,stroke-width:2px;
-
-    class C1,C2,C3,C4 critical;
-    class H1,H2,H3 high;
-    class M1,M2 medium;
+quadrantChart
+    title Threat Criticality (Impact vs Likelihood)
+    x-axis Low Likelihood --> High Likelihood
+    y-axis Low Impact --> High Impact
+    quadrant-1 Monitor
+    quadrant-2 Lower Priority
+    quadrant-3 High Priority
+    quadrant-4 Critical Focus
+    Cross-user auth/session bypass: [0.65, 0.95]
+    OAuth state validation bypass: [0.55, 0.92]
+    SSRF bypass to metadata services: [0.45, 0.90]
+    File path traversal outside allowlist: [0.50, 0.86]
+    Credential theft after host compromise: [0.35, 0.80]
+    Attachment URL leakage before TTL: [0.60, 0.68]
+    Read-only/write-scope bypass: [0.42, 0.75]
+    Prompt-injection-driven same-user actions: [0.70, 0.52]
+    API/resource exhaustion DoS: [0.66, 0.48]
 ```
 
 ## 6) Security review checklist tied to the model
