@@ -5,6 +5,9 @@
 ---
 
 
+<details>
+<summary><strong>1. System context — Local / Stdio mode</strong> (click to expand)</summary>
+
 ## 1. System context — Local / Stdio mode
 
 ```mermaid
@@ -48,6 +51,12 @@ flowchart LR
 
 ---
 
+
+</details>
+
+<details>
+<summary><strong>2. Trust boundaries - DFD style</strong> (click to expand)</summary>
+
 ## 2. Trust boundaries - DFD style
 
 ### 2a. Overview
@@ -85,6 +94,9 @@ flowchart TB
 
 ### Trust boundary table
 
+<details>
+<summary><strong>Table 1</strong> (click to expand)</summary>
+
 | ID | Trust Boundary | From | To | What Crosses |
 |---|---|---|---|---|
 | **TB1** | MCP Client ↔ Server | AI Assistant / MCP Client | MCP Server Process via stdio pipe | JSON-RPC tool calls, tool parameters, prompt-injected content from email/docs/Drive |
@@ -93,8 +105,16 @@ flowchart TB
 | **TB4** | Server ↔ External URLs | MCP Server Process | User-supplied URL targets | HTTP/HTTPS fetch for Drive file import via fileUrl parameter |
 | **TB5** | Operator Configuration ↔ Server | Environment variables, `.env`, CLI flags | MCP Server Process | `ALLOWED_FILE_DIRS`, `GOOGLE_OAUTH_CLIENT_*`, `--read-only`, `--permissions`, `--tools`, `--tool-tier`, `OAUTHLIB_INSECURE_TRANSPORT` |
 
+</details>
+
 
 ---
+
+
+</details>
+
+<details>
+<summary><strong>3. Data flow — Authentication - local OAuth 2.0 flow</strong> (click to expand)</summary>
 
 ## 3. Data flow — Authentication - local OAuth 2.0 flow
 
@@ -119,6 +139,12 @@ sequenceDiagram
 ```
 
 ---
+
+
+</details>
+
+<details>
+<summary><strong>4. Attack paths and defenses — Local mode focus</strong> (click to expand)</summary>
 
 ## 4. Attack paths and defenses — Local mode focus
 
@@ -155,6 +181,12 @@ flowchart TD
 
 ---
 
+
+</details>
+
+<details>
+<summary><strong>5. STRIDE control map — Local deployment</strong> (click to expand)</summary>
+
 ## 5. STRIDE control map — Local deployment
 
 ```mermaid
@@ -173,6 +205,12 @@ flowchart LR
 ```
 
 ---
+
+
+</details>
+
+<details>
+<summary><strong>6. Threat criticality — Local mode</strong> (click to expand)</summary>
 
 ## 6. Threat criticality — Local mode
 
@@ -197,6 +235,12 @@ quadrantChart
 ```
 
 ---
+
+
+</details>
+
+<details>
+<summary><strong>7. Scope gating architecture</strong> (click to expand)</summary>
 
 ## 7. Scope gating architecture
 
@@ -226,6 +270,12 @@ flowchart LR
 
 ---
 
+
+</details>
+
+<details>
+<summary><strong>8. Consolidated threat catalog</strong> (click to expand)</summary>
+
 ## 8. Consolidated threat catalog
 
 > **Risk scoring methodology**
@@ -248,6 +298,9 @@ flowchart LR
 > | **12–19** | High |
 > | **6–11** | Medium |
 > | **1–5** | Low |
+
+<details>
+<summary><strong>Table 2</strong> (click to expand)</summary>
 
 | # | ID | Threat Title | Boundary | STRIDE | Description | Impact | Likelihood | Risk | Rating |
 |---|---|---|---|---|---|---|---|---|---|
@@ -416,7 +469,12 @@ flowchart LR
 | 163 | TB5-E5 | Tool tier YAML not operator-configurable | TB5 | E | The tool tier definitions are hardcoded in the deployment. An operator cannot customize which tools belong to which tier without modifying source code. No integrity verification on the YAML. | 3 | 2 | 6 | Medium |
 | 164 | TB5-E6 | OAUTH_ALLOWED_ORIGINS not validated | TB5 | E | CORS origin values from this environment variable are not validated as proper origins. Setting wildcard or attacker origins could enable cross-origin access to the MCP server in HTTP mode. | 3 | 2 | 6 | Medium |
 
+</details>
+
 ### Top 10 threats by risk score
+
+<details>
+<summary><strong>Table 3</strong> (click to expand)</summary>
 
 | Rank | # | ID | Threat | Boundary | Risk | Rating |
 |---|---|---|---|---|---|---|
@@ -431,11 +489,22 @@ flowchart LR
 | 9 | 26 | TB1-I3 | Spreadsheet data leakage to LLM | TB1 | 16 | High |
 | 10 | 33 | TB1-I10 | Data leakage to LLM provider | TB1 | 16 | High |
 
+</details>
+
 ---
+
+
+</details>
+
+<details>
+<summary><strong>9. Mitigation catalog</strong> (click to expand)</summary>
 
 ## 9. Mitigation catalog
 
 > Each mitigation is mapped to the threat(s) it addresses. **Status** indicates whether the control is already present in the codebase (`Implemented`, `Partially Implemented`) or recommended as a new control (`Proposed`).
+
+<details>
+<summary><strong>Table 4</strong> (click to expand)</summary>
 
 | Mitigation ID | Description | Applies To | Status | Severity |
 |---|---|---|---|---|
@@ -511,7 +580,12 @@ flowchart LR
 | M-70 | **Proposed: Redact sensitive paths in startup logs** — Mask or truncate credential directory paths and OAuth configuration details in startup output. Use `***` or partial masking for paths visible in shared logging systems. | TB5-I2 | Proposed | Low |
 | M-71 | **Proposed: CLI argument validation for --cli remainder** — Validate and sanitize `--cli` remainder arguments before passing to the CLI handler. Reject arguments containing shell metacharacters or unexpected patterns. | TB5-T6 | Proposed | Low |
 | M-72 | **Accepted risk: Search query visibility** — Search query strings for Drive and Gmail are inherently visible to the LLM (the LLM constructs them). This is a fundamental property of the MCP architecture. Operators should be aware that search intent is exposed. | TB1-I11 | Proposed | Low |
+
+</details>
 ### Mitigation status summary
+
+<details>
+<summary><strong>Table 5</strong> (click to expand)</summary>
 
 | Status | Count |
 |---|---|
@@ -520,7 +594,12 @@ flowchart LR
 | Proposed | 43 |
 | **Total** | **72** |
 
+</details>
+
 ### Mitigation severity distribution
+
+<details>
+<summary><strong>Table 6</strong> (click to expand)</summary>
 
 | Severity | Count |
 |---|---|
@@ -529,3 +608,8 @@ flowchart LR
 | Medium | 34 |
 | Low | 14 |
 | **Total** | **72** |
+
+</details>
+
+</details>
+
